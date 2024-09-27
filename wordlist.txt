@@ -1,0 +1,14 @@
+anonymous:anony
+anonymous:a
+anonymous:
+anonymous:123
+anonymous:1234
+anonymous:12345
+anonymous:123456
+anonymous:passwds
+anonymous:anonymous@
+anonymous:passwd
+admin:admin
+ftp:ftp
+ : 
+ftp:ftp1
