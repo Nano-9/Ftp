@@ -85,7 +85,7 @@ senhas = {
 	"anonymous":"anonymous"}
 print("\n\033[1m[\033[m\033[1;36m+\033[m\033[1m]\033[m\033[1m Alvo:\033[m \033[1;32m>>>> {} <<<<\033[m\033[m".format(host))
 print("\033[1m[\033[m\033[1;36m+\033[m\033[1m]\033[m\033[1m Carregando wordlist...\033[m")
-with open("ftptest1.txt","r") as arqpass:
+with open("wordlist.txt","r") as arqpass:
 	for x in arqpass:
 		pw1 = x.replace("\n","")
 		pw2 = pw1.split(":")
