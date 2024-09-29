@@ -20,14 +20,14 @@ def banner():
 			os.system("cls")
 	print(f"""\033[1;34m
 
-███████╗████████╗██████╗     ██████╗ ██████╗ ██╗   ██╗████████╗███████╗
-██╔════╝╚══██╔══╝██╔══██╗    ██╔══██╗██╔══██╗██║   ██║╚══██╔══╝██╔════╝
-█████╗     ██║   ██████╔╝    ██████╔╝██████╔╝██║   ██║   ██║   █████╗  
-██╔══╝     ██║   ██╔═══╝     ██╔══██╗██╔══██╗██║   ██║   ██║   ██╔══╝  
-██║        ██║   ██║         ██████╔╝██║  ██║╚██████╔╝   ██║   ███████╗
-╚═╝        ╚═╝   ╚═╝         ╚═════╝ ╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚══════╝ (v 1.0)
-              \033[m\033[1m>>> Leia o Manual:\033[m \033[1;32mdigite M\033[m\033[1m <<<\033[m
-		    \033[m\033[1m[\033[m\033[1;3{random.randint(1,6)}m+\033[m\033[1m]\033[m\033[1;3{random.randint(1,6)}m Coded by:\033[m \033[1;4mNano\033[m
+    ███████╗████████╗██████╗     ██████╗ ██████╗ ██╗   ██╗████████╗███████╗
+    ██╔════╝╚══██╔══╝██╔══██╗    ██╔══██╗██╔══██╗██║   ██║╚══██╔══╝██╔════╝
+    █████╗     ██║   ██████╔╝    ██████╔╝██████╔╝██║   ██║   ██║   █████╗  
+    ██╔══╝     ██║   ██╔═══╝     ██╔══██╗██╔══██╗██║   ██║   ██║   ██╔══╝  
+    ██║        ██║   ██║         ██████╔╝██║  ██║╚██████╔╝   ██║   ███████╗
+    ╚═╝        ╚═╝   ╚═╝         ╚═════╝ ╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚══════╝ (v 1.0)
+                     \033[m\033[1m>>> Leia o Manual:\033[m \033[1;32mdigite M\033[m\033[1m <<<\033[m
+		           \033[m\033[1m[\033[m\033[1;3{random.randint(1,6)}m+\033[m\033[1m]\033[m\033[1;3{random.randint(1,6)}m Coded by:\033[m \033[1;4mNano\033[m
 	""")
 
 def Comandos():
@@ -90,6 +90,8 @@ else:
 logou = False
 userlogin = False
 userpassw = False
+usernames = False
+passwords = False
 senhas = {
 	"ftp":"ftp",
 	"":"",
@@ -148,6 +150,8 @@ for k,v in senhas.items():
 	else:
 		if "230" in server:
 			logou = True
+			usernames = k.encode()
+			passwords = v.encode()
 			userlogin = k
 			userpassw = v
 			print("\n\033[1m[\033[m\033[1;32m >> LOGIN ENCONTRADO: <<\033[m\033[1m ]\033[m\n")
@@ -226,7 +230,7 @@ if logou:
 					userrecv = MYSOCKET.recv(1048)
 					MYSOCKET.send(b"PASS passwd\r\n")
 					paswrecv = MYSOCKET.recv(1048) 
-					MYSOCKET.send(b"PASV 10\r\n")
+					MYSOCKET.send(b"PASV \r\n")
 					accept = MYSOCKET.recv(2048).decode("utf-8").replace("214 Help OK.","")
 					print(accept)
 				else:
@@ -234,9 +238,7 @@ if logou:
 					userrecv = MYSOCKET.recv(1048)
 					MYSOCKET.send(b"PASS "+passwords+b"\r\n")
 					paswrecv = MYSOCKET.recv(1048) 
-					MYSOCKET.send(b"HELP \r\n")
-					ignore = MYSOCKET.recv(2048)
-					MYSOCKET.send(b"HELP \r\n")
+					MYSOCKET.send(b"PASV \r\n")
 					accept = MYSOCKET.recv(2048).decode("utf-8").replace("214 Help OK.","")
 					print(accept)
 			elif comando_user == "cl":
