@@ -53,16 +53,17 @@ def Manual():
 	print("""
 \033[1;31m>>> O SCRIPT AINDA ESTÁ EM FASES DE TESTES!!!! <<<\033[m
 
-EXEMPLO DE USO:
+\033[1;36m[+] \033[m\033[1mEXEMPLO DE USO:\033[m
 
-ftp.site.example.com ou apenas o IP (Não é necessário passar a porta)
+ftp.site.example.com ou 
+apenas o IP + PORTA
 
+\033[1;36m[+] \033[m\033[1mOBS:\033[m
 
-OBS:
-
-Caso o script feche do nada sem avisar o motivo (no linux) é porque teve inúmeras requisições
-e isso será arrumado na próxima atualização
-Mesma coisa no Windows (aqui é avisado o motivo)
+\033[1;36m>\033[m Caso o script feche do nada sem avisar o motivo (no linux) 
+\033[1;36m>\033[m é porque teve inúmeras requisições
+\033[1;36m>\033[m e isso será arrumado na próxima atualização
+\033[1;36m>\033[m Mesma coisa no Windows (aqui é avisado o motivo)
 		""")
 	raise SystemExit
 
@@ -70,7 +71,6 @@ banner()
 
 try:
 	host = str(input("\033[1;34mHOST:\033[m ")).strip()
-	port = str(input("\033[1;34mPORTA\033[m \033[1m(default 21): \033[m"))
 except KeyboardInterrupt:
 	raise SystemExit
 except AttributeError:
@@ -80,6 +80,13 @@ else:
 		Manual()
 	if host == "":
 		raise SystemExit
+	try:
+		port = str(input("\033[1;34mPORTA\033[m \033[1m(default 21): \033[m"))
+	except KeyboardInterrupt:
+		raise SystemExit
+	except AttributeError:
+		raise SystemExit
+
 logou = False
 userlogin = False
 userpassw = False
